@@ -5,7 +5,7 @@ namespace kum
 	internal class World
 	{
 		int width, height, resize_factor;
-		Tile[,]? sandbox;
+		Tile[,] sandbox;
 
 		public World(int width, int height, int resize_factor)
 		{
@@ -26,76 +26,57 @@ namespace kum
 
 		internal Tile Get(int x, int y)
 		{
-			try
-			{
-				return sandbox[x, y];
-			}
-			catch (System.NullReferenceException)
-			{
-				return null;
-			}
-			catch (IndexOutOfRangeException)
+			if (x < 0 || x >= width || y < 0 || y >= height)
 			{
 				return new Tile(x, y, this, "sand");
 			}
+
+			return sandbox[x, y];
 		}
 
 		internal void Set(int x, int y, Tile tile)
 		{
-			try
+			if (x < 0 || x >= width || y < 0 || y >= height)
 			{
-				sandbox[x, y] = tile;
+				return;
 			}
-			catch (System.NullReferenceException)
-			{
-
-			}
-			catch (IndexOutOfRangeException)
-			{
-
-			}
+			sandbox[x, y] = tile;
 		}
 
 		internal void Paint(int x, int y, string type, int brush_size)
 		{
-			try
+			//Check if x, y is within bounds of sandbox array
+			if (x < 0 || x >= width || y < 0 || y >= height)
 			{
-				for (int i = 0; i < brush_size; i++)
+				return;
+			}
+
+			for (int i = 0; i < brush_size; i++)
+			{
+				for (int j = 0; j < brush_size; j++)
 				{
-					for (int j = 0; j < brush_size; j++)
-					{
-						sandbox[x + i, y + j] = new Tile(x + i, y + j, this, type);
-					}
+					sandbox[x + i, y + j] = new Tile(x + i, y + j, this, type);
 				}
 			}
-			catch (System.NullReferenceException)
-			{
-
-			}
-			catch (IndexOutOfRangeException)
-			{
-
-			}
+			
 		}
 
 		internal void Draw()
 		{
+			
 			for (int i = 0; i < width; i++)
 			{
 				for (int j = 0; j < height; j++)
 				{
-					try
+					if (i < 0 || i >= width || j < 0 || j >= height)
 					{
-						if (!(sandbox[i, j].type == "air"))
-						{
-							Raylib.DrawRectangle(i * resize_factor, j * resize_factor, resize_factor, resize_factor, sandbox[i, j].color);
-						}
-					}
-					catch (System.NullReferenceException)
-					{
-
+						return;
 					}
 
+					if (!(sandbox[i, j].type == "air"))
+					{
+						Raylib.DrawRectangle(i * resize_factor, j * resize_factor, resize_factor, resize_factor, sandbox[i, j].color);
+					}
 				}
 			}
 		}
@@ -106,22 +87,18 @@ namespace kum
 			{
 				for (int j = 0; j < height; j++)
 				{
-					try
+					if (i < 0 || i >= width || j < 0 || j >= height)
 					{
-						if (!(sandbox[i, j].type == "air") && !(sandbox[i, j].updated))
-						{
-							sandbox[i, j].Update();
-						}
-						else if (sandbox[i, j].updated)
-						{
-							sandbox[i, j].updated = false;
-						}
+						return;
 					}
-					catch (System.NullReferenceException)
+					if (!(sandbox[i, j].type == "air") && !(sandbox[i, j].updated))
 					{
-
+						sandbox[i, j].Update();
 					}
-
+					else if (sandbox[i, j].updated)
+					{
+						sandbox[i, j].updated = false;
+					}
 				}
 			}
 		}
